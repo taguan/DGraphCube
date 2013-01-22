@@ -28,4 +28,13 @@ public interface MultiDimensionnalVertexID<T>
 	 * @return the corresponding dimension
 	 */
 	public T getDimension(int index);
+	
+	/**
+	 * Set the number of dimensions.
+	 * Should be called once, at the beginning
+	 * @param nbrOfDimensions
+	 */
+	public void setNbrOfDimensions(int nbrOfDimensions);
+	
+	public int getNbrOfDimensions();
 }

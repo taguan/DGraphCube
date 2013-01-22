@@ -1,5 +1,7 @@
 package io;
 
+import java.io.IOException;
+
 /**
  * Parsing VertexID from input keys
  * 
@@ -18,6 +20,6 @@ public interface VertexIDParser<K,P> {
 	 * @return A representation of the VertexID
 	 * 
 	 **/
-	public K parseID(P input);
+	public K parseID(P input) throws IOException;
 
 }
