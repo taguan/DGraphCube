@@ -9,15 +9,23 @@ import org.apache.hadoop.io.*;
  * Must extends WritableComparable
  * 
  * @author Benoit Denis
+ * @param <T> Type representing dimensions
  *
  */
 
-public interface MultiDimensionnalVertexID 
-	extends WritableComparable<MultiDimensionnalVertexID> {
+public interface MultiDimensionnalVertexID<T> 
+	extends WritableComparable<MultiDimensionnalVertexID<T>> {
 	
 	public void write(DataOutput out) throws IOException;
 	
 	public void readFields(DataInput in) throws IOException;
 	
-	public int compareTo(MultiDimensionnalVertexID other);
+	public int compareTo(MultiDimensionnalVertexID<T> other);
+	
+	/**
+	 * Gets the index th dimension
+	 * @param index the index of the dimension to be returned
+	 * @return the corresponding dimension
+	 */
+	public T getDimension(int index);
 }
