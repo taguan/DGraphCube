@@ -8,54 +8,41 @@ import org.apache.hadoop.io.Text;
 
 public class TextArrayVertexID implements MultiDimensionnalVertexID<String> {
 	
-	private static int nbrOfDimensions = 0;
+	public int nbrOfDimensions;
 	private String[]dimensions;
 	
-	public TextArrayVertexID(){
+	public TextArrayVertexID(int nbrOfDimensions){
+		this.nbrOfDimensions = nbrOfDimensions;
 		this.dimensions = null;
 	}
 	
-	public TextArrayVertexID(String[]dimensions){
+	public TextArrayVertexID(String[]dimensions, int nbrOfDimensions){
+		this(nbrOfDimensions);
 		this.dimensions = dimensions;
 	}
 	
 	public void setNbrOfDimensions(int nbrOfDimensions){
-		TextArrayVertexID.nbrOfDimensions = nbrOfDimensions;
+		this.nbrOfDimensions = nbrOfDimensions;
 	}
 	
 	public int getNbrOfDimensions(){
 		return nbrOfDimensions;
 	}
-	
-	public void write(DataOutput out) throws IOException{
-		for(String dimension : dimensions){
-			Text text = new Text(dimension);
-			text.write(out);
-		}
-	}
-	
-	public void readFields(DataInput in) throws IOException{
-		this.dimensions = new String[nbrOfDimensions];
-		for(int i = 0; i < nbrOfDimensions; i++){
-			Text text = new Text();
-			text.readFields(in);
-			this.dimensions[i] = text.toString();
-		}
-	}
-	
-	/**
-	 * Compare the first string, if equals, the second, etc.
-	 */
-	public int compareTo(MultiDimensionnalVertexID<String> other){
-		for(int i = 0; i < nbrOfDimensions; i++){
-			int res = this.dimensions[i].compareTo(other.getDimension(i));
-			if(res != 0) return res;
-		}
-		return 0;
-	}
+
 	
 	public String getDimension(int index){
 		return dimensions[index];
+	}
+	
+	public String toString(){
+		StringBuffer strb = new StringBuffer();
+		for(int i = 0; i<dimensions.length-1; i++){
+			strb.append(dimensions[i]);
+			strb.append(" ");
+		}
+		strb.append(dimensions[dimensions.length-1]);
+		
+		return strb.toString();
 	}
 
 }

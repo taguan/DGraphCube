@@ -1,5 +1,9 @@
 package cuboid;
 
+import graph.*;
+
+import io.StringToTextArrayVertexIDParser;
+
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -11,49 +15,61 @@ import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-/*
+/**
+ * @author Benoit Denis
+ * 
  * Simplified version
  * 1) no edges
- * 2) vertex identifier = long
- * 3) aggregate function = /10
+ * 2) aggregate function = identity
  */
 public class CuboidProcessor extends Configured implements Tool {
 	
-	public static class Map extends MapReduceBase implements Mapper<Text,Text,LongWritable,LongWritable>{
+	public static class Map extends MapReduceBase implements Mapper<Text,Text,Text,LongWritable>{
 		
-		public void map(Text key, Text value, OutputCollector<LongWritable,LongWritable> output, Reporter reporter) throws IOException {
-			long vertexID = Long.parseLong(key.toString());
-			LongWritable aggregatedID = new LongWritable(vertexID / 10);
-			
+		private int dimension;
+		
+		public void configure(JobConf job){
+			dimension = Integer.parseInt(job.get("DIMENSIONS"));
+		}
+		
+		public void map(Text key, Text value, OutputCollector<Text,LongWritable> output, Reporter reporter) throws IOException {
+			TextArrayVertexID vertexID = (TextArrayVertexID)
+					(new StringToTextArrayVertexIDParser(dimension)).parseID(key.toString());
+			TextArrayVertexID aggregatedID = vertexID;
 			LongWritable outputWeight = new LongWritable(Long.parseLong(value.toString()));
+			System.out.println(dimension);
+			System.out.println(aggregatedID);
 			
-			output.collect(aggregatedID, outputWeight);
+			output.collect(new Text(aggregatedID.toString()), outputWeight);
 		}
 	}
 	
-	public static class Reduce extends MapReduceBase implements Reducer<LongWritable,LongWritable,LongWritable,LongWritable>{
+	public static class Reduce extends MapReduceBase implements Reducer<Text,LongWritable,Text,LongWritable>{
 		
-		public void reduce(LongWritable key, Iterator<LongWritable> values, 
-				OutputCollector<LongWritable,LongWritable> output, Reporter reporter) throws IOException {
+		public void reduce(Text key, Iterator<LongWritable> values, 
+				OutputCollector<Text,LongWritable> output, Reporter reporter) throws IOException {
 			long sum = 0;
 			while(values.hasNext()){
 				sum += values.next().get();
 			}
-			output.collect(key, new LongWritable(sum));
+			output.collect(new Text(key.toString()), new LongWritable(sum));
 		}
 	}
 	
 	public int run(String[]args) throws Exception{
 		
-		if(args.length != 3){
+		if(args.length != 4){
 			printHelp();
 			return -1;
 		}
 		
+		
 		JobConf conf = new JobConf(getConf(),CuboidProcessor.class);
 		conf.setJobName("cuboidQuery");
 		
-		conf.setOutputKeyClass(LongWritable.class);
+		conf.set("DIMENSIONS", args[3]);
+		
+		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(LongWritable.class);
 		
 		conf.setMapperClass(Map.class);
@@ -73,6 +89,7 @@ public class CuboidProcessor extends Configured implements Tool {
 
 	private void printHelp() {
 		System.out.println("arg1 : input path\narg2 : output path");
+		System.out.println("arg3 : number of dimensions");
 		
 	}
 	
