@@ -4,7 +4,6 @@ package cuboid;
 import graph.*;
 
 /**
- * 
  * @author Benoît Denis
  * 
  * Base implementation for an aggregate function.
