@@ -8,20 +8,15 @@ import graph.*;
  *
  * Defines an aggregate function to aggregate vertices and edges
  *
- * @param <T> Type of a dimension
  */
-public interface AggregateFunction<T> {
+public interface AggregateFunction {
 
 	/**
 	 * Aggregate a vertex, modifies the dimensions to be aggregated in vertexID 
 	 * @param vertexID vertex to be aggregated
 	 */
-	public void aggregateVertex(MultiDimensionnalVertexID<T> vertexID);
+	public void aggregateVertex(MultiDimensionnalVertexID vertexID);
 	
-	/**
-	 * @return the aggregated form of a dimension (for instance, for String : '*')
-	 */
-	public T aggregateDimension();
 	
 	/**
 	 * Initialize the internal data structure representing the aggregate function

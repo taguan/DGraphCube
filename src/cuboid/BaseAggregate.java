@@ -3,8 +3,14 @@ package cuboid;
 
 import graph.*;
 
-
-public abstract class BaseAggregate<T> implements AggregateFunction<T> {
+/**
+ * 
+ * @author Benoît Denis
+ * 
+ * Base implementation for an aggregate function.
+ *
+ */
+public class BaseAggregate implements AggregateFunction {
 
 	int[] dimToAggregate;
 	
@@ -12,9 +18,9 @@ public abstract class BaseAggregate<T> implements AggregateFunction<T> {
 		dimToAggregate = null;
 	}
 	
-	public void aggregateVertex(MultiDimensionnalVertexID<T> vertexID){
+	public void aggregateVertex(MultiDimensionnalVertexID vertexID){
 		for (int i : dimToAggregate){
-			vertexID.setDimension(i, aggregateDimension());
+			vertexID.setDimension(i, vertexID.getDimension(i).getAggregate() );
 		}
 	}
 	
@@ -25,6 +31,5 @@ public abstract class BaseAggregate<T> implements AggregateFunction<T> {
 			dimToAggregate[i] = Integer.parseInt(explode[i]);
 		}
 	}
-	
-	public abstract T aggregateDimension();
+
 }

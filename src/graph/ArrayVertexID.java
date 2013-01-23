@@ -1,17 +1,17 @@
 package graph;
 
 
-public class ArrayVertexID<T> implements MultiDimensionnalVertexID<T> {
+public class ArrayVertexID implements MultiDimensionnalVertexID {
 	
 	public int nbrOfDimensions;
-	private T[]dimensions;
+	private Dimension []dimensions;
 	
 	public ArrayVertexID(int nbrOfDimensions){
 		this.nbrOfDimensions = nbrOfDimensions;
 		this.dimensions = null;
 	}
 	
-	public ArrayVertexID(T[]dimensions, int nbrOfDimensions){
+	public ArrayVertexID(Dimension []dimensions, int nbrOfDimensions){
 		this(nbrOfDimensions);
 		this.dimensions = dimensions;
 	}
@@ -25,11 +25,11 @@ public class ArrayVertexID<T> implements MultiDimensionnalVertexID<T> {
 	}
 
 	
-	public T getDimension(int index){
+	public Dimension getDimension(int index){
 		return dimensions[index];
 	}
 	
-	public void setDimension(int index, T newValue){
+	public void setDimension(int index, Dimension newValue){
 		dimensions[index] = newValue;
 	}
 	

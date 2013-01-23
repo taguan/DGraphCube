@@ -19,9 +19,14 @@ public class StringToStringArrayVertexIDParser extends MultiDimVertexIDParser<St
 	/*
 	 * @param input String of the form "dim1 dim2 dim3 ..."
 	 */
-	public MultiDimensionnalVertexID<String> parseID(String input) throws IOException{
+	public MultiDimensionnalVertexID parseID(String input) throws IOException{
 		String[]explode = input.split(" ");
-		ArrayVertexID<String> vertexID = new ArrayVertexID<String>(explode,this.dimension);
+		StringDimension[]dimensions = new StringDimension[explode.length];
+		for(int i = 0; i<dimensions.length; i++){
+			dimensions[i] = new StringDimension(explode[i]);
+		}
+		ArrayVertexID vertexID = 
+				new ArrayVertexID(dimensions,this.dimension);
 		
 		if(explode.length != this.dimension){
 			System.out.println("Expected number of dimensions : " + this.dimension);

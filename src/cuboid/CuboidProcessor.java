@@ -20,27 +20,29 @@ import org.apache.hadoop.util.ToolRunner;
  * 
  * Simplified version
  * 1) no edges
- * 2) aggregate function = identity
  */
 public class CuboidProcessor extends Configured implements Tool {
 	
 	public static class Map extends MapReduceBase implements Mapper<Text,Text,Text,LongWritable>{
 		
 		private int dimension;
+		private AggregateFunction func;
 		
 		public void configure(JobConf job){
 			dimension = Integer.parseInt(job.get("DIMENSIONS"));
+			func = new BaseAggregate();
+			func.parseFunction(job.get("AGGREGATE_FUNCTION"));
 		}
 
 		public void map(Text key, Text value, OutputCollector<Text,LongWritable> output, Reporter reporter) throws IOException {
-			MultiDimensionnalVertexID<?> vertexID = (MultiDimensionnalVertexID<?>)
+			MultiDimensionnalVertexID vertexID = 
 					(new StringToStringArrayVertexIDParser(dimension)).parseID(key.toString());
 			//Improvement to be implemented : leave the choice of the parser to the user
-			MultiDimensionnalVertexID<?> aggregatedID = vertexID;
+			func.aggregateVertex(vertexID);
 			
 			LongWritable outputWeight = new LongWritable(Long.parseLong(value.toString()));
 			
-			output.collect(new Text(aggregatedID.toString()), outputWeight);
+			output.collect(new Text(vertexID.toString()), outputWeight);
 		}
 	}
 	
@@ -58,7 +60,7 @@ public class CuboidProcessor extends Configured implements Tool {
 	
 	public int run(String[]args) throws Exception{
 		
-		if(args.length != 4){
+		if(args.length != 5){
 			printHelp();
 			return -1;
 		}
@@ -68,6 +70,7 @@ public class CuboidProcessor extends Configured implements Tool {
 		conf.setJobName("cuboidQuery");
 		
 		conf.set("DIMENSIONS", args[3]);
+		conf.set("AGGREGATE_FUNCTION", args[4]);
 		
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(LongWritable.class);
@@ -90,7 +93,7 @@ public class CuboidProcessor extends Configured implements Tool {
 	private void printHelp() {
 		System.out.println("arg1 : input path\narg2 : output path");
 		System.out.println("arg3 : number of dimensions");
-		
+		System.out.println("arg4 : aggregated function of the form int,int,... ");
 	}
 	
 	public static void main(String[]args) throws Exception{

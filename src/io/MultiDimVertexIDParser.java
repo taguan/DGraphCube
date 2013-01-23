@@ -9,9 +9,12 @@ import graph.*;
  * Parses a MultiDimensionnalVertexID from its String representation
  * 
  * @author Benoit Denis
+ * 
+ * @param <T> Type of the dimension
+ * @param <S> Type of the input
  *
  */
-public abstract class MultiDimVertexIDParser<T,S> implements VertexIDParser<MultiDimensionnalVertexID<T>,S> {
+public abstract class MultiDimVertexIDParser<T,S> implements VertexIDParser<MultiDimensionnalVertexID,S> {
 
-	public abstract MultiDimensionnalVertexID<T> parseID(S input) throws IOException;
+	public abstract MultiDimensionnalVertexID parseID(S input) throws IOException;
 }

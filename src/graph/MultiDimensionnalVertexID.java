@@ -6,11 +6,10 @@ package graph;
  * Representation for multidimensional vertex identifiers
  * 
  * @author Benoit Denis
- * @param <T> Type representing dimensions
  *
  */
 
-public interface MultiDimensionnalVertexID<T>  {
+public interface MultiDimensionnalVertexID  {
 	
 	
 	/**
@@ -18,14 +17,14 @@ public interface MultiDimensionnalVertexID<T>  {
 	 * @param index the index of the dimension to be returned
 	 * @return the corresponding dimension
 	 */
-	public T getDimension(int index);
+	public Dimension getDimension(int index);
 	
 	/**
 	 * Changes the value of the dimension of index 'index"
 	 * @param index
 	 * @param newValue
 	 */
-	public void setDimension(int index, T newValue);
+	public void setDimension(int index, Dimension newValue);
 	
 	/**
 	 * Set the number of dimensions.
