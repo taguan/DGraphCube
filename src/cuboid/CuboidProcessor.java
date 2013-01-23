@@ -2,11 +2,9 @@ package cuboid;
 
 import graph.*;
 
-import io.StringToStringArrayVertexIDParser;
-import io.StringValueParser;
+import io.StringToStringArrayKeyParser;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.commons.cli.BasicParser;
@@ -45,26 +43,21 @@ public class CuboidProcessor extends Configured implements Tool {
 		}
 
 		public void map(Text key, Text value, OutputCollector<Text,LongWritable> output, Reporter reporter) throws IOException {
-			MultiDimensionnalVertexID vertexID = 
-					(new StringToStringArrayVertexIDParser(dimension)).parseID(key.toString(),vertexDelimiter);
+			MultiDimensionnalVertexID [] vertexOrEdge = 
+					(new StringToStringArrayKeyParser(dimension)).parseID(key.toString(),
+							vertexDelimiter,edgeDelimiter);
 			//Improvement to be implemented : leave the choice of the parser to the user
 			
-			ArrayList<Object> list = (new StringValueParser
-					(dimension,vertexID,edgeDelimiter,vertexDelimiter)).parseValue(value.toString());
-			
-			func.aggregateVertex(vertexID);
-						
-			LongWritable outputWeight = new LongWritable((Long)list.get(0));		
-			output.collect(new Text(vertexID.toString()), outputWeight);
-			
-			for(int i = 1; i< list.size(); i++){
-				DirectedEdge current = (DirectedEdge)list.get(i);
-				func.aggregateVertex(current.getDest());
-				DirectedEdge aggregateEdge = new DirectedEdge(vertexID,
-						current.getDest(),current.getWeight());
-				output.collect(new Text(aggregateEdge.toString()), 
-						new LongWritable(aggregateEdge.getWeight()));
+			StringBuffer stringRep = new StringBuffer();
+			for(int i = 0; i<vertexOrEdge.length; i++){
+				func.aggregateVertex(vertexOrEdge[i]);
+				stringRep.append(vertexOrEdge[i].toString(vertexDelimiter));
+				if(i != vertexOrEdge.length -1) stringRep.append(edgeDelimiter);
 			}
+						
+			LongWritable outputWeight = new LongWritable(Long.parseLong(value.toString()));		
+			output.collect(new Text(stringRep.toString()), outputWeight);
+			
 		}
 	}
 	
@@ -89,7 +82,7 @@ public class CuboidProcessor extends Configured implements Tool {
 	    Options options = new Options();
 	    options.addOption("h", "help", false, "Help");
 	    options.addOption("inp", "inputPath", true, "Input path / file (HDFS)");
-	    options.addOption("oup", "outputPath", true, "Output path (HDFS");
+	    options.addOption("oup", "outputPath", true, "Output path (HDFS)");
 	    options.addOption("n", "numberOfDim", true, "Number of vertex dimensions");
 	    options.addOption("f", "function", true, "Aggregate function :  int1,int2,...\n" +
 	    		"int1, int2 being the dimensions to aggregate");

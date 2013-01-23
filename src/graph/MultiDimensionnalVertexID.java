@@ -34,4 +34,6 @@ public interface MultiDimensionnalVertexID  {
 	public void setNbrOfDimensions(int nbrOfDimensions);
 	
 	public int getNbrOfDimensions();
+	
+	public String toString(String delimiter);
 }

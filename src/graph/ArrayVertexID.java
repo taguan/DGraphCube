@@ -33,11 +33,11 @@ public class ArrayVertexID implements MultiDimensionnalVertexID {
 		dimensions[index] = newValue;
 	}
 	
-	public String toString(){
+	public String toString(String delimiter){
 		StringBuffer strb = new StringBuffer();
 		for(int i = 0; i<dimensions.length-1; i++){
 			strb.append(dimensions[i].toString());
-			strb.append(" ");
+			strb.append(delimiter);
 		}
 		strb.append(dimensions[dimensions.length-1].toString());
 		
