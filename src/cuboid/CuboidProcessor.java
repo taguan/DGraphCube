@@ -3,8 +3,10 @@ package cuboid;
 import graph.*;
 
 import io.StringToStringArrayVertexIDParser;
+import io.StringValueParser;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.commons.cli.BasicParser;
@@ -32,22 +34,37 @@ public class CuboidProcessor extends Configured implements Tool {
 		
 		private int dimension;
 		private AggregateFunction func;
+		private String vertexDelimiter, edgeDelimiter;
 		
 		public void configure(JobConf job){
 			dimension = Integer.parseInt(job.get("DIMENSIONS"));
 			func = new BaseAggregate();
 			func.parseFunction(job.get("AGGREGATE_FUNCTION"));
+			vertexDelimiter = job.get("VD");
+			edgeDelimiter = job.get("ED");
 		}
 
 		public void map(Text key, Text value, OutputCollector<Text,LongWritable> output, Reporter reporter) throws IOException {
 			MultiDimensionnalVertexID vertexID = 
-					(new StringToStringArrayVertexIDParser(dimension)).parseID(key.toString());
+					(new StringToStringArrayVertexIDParser(dimension)).parseID(key.toString(),vertexDelimiter);
 			//Improvement to be implemented : leave the choice of the parser to the user
+			
+			ArrayList<Object> list = (new StringValueParser
+					(dimension,vertexID,edgeDelimiter,vertexDelimiter)).parseValue(value.toString());
+			
 			func.aggregateVertex(vertexID);
-			
-			LongWritable outputWeight = new LongWritable(Long.parseLong(value.toString()));
-			
+						
+			LongWritable outputWeight = new LongWritable((Long)list.get(0));		
 			output.collect(new Text(vertexID.toString()), outputWeight);
+			
+			for(int i = 1; i< list.size(); i++){
+				DirectedEdge current = (DirectedEdge)list.get(i);
+				func.aggregateVertex(current.getDest());
+				DirectedEdge aggregateEdge = new DirectedEdge(vertexID,
+						current.getDest(),current.getWeight());
+				output.collect(new Text(aggregateEdge.toString()), 
+						new LongWritable(aggregateEdge.getWeight()));
+			}
 		}
 	}
 	
@@ -76,6 +93,8 @@ public class CuboidProcessor extends Configured implements Tool {
 	    options.addOption("n", "numberOfDim", true, "Number of vertex dimensions");
 	    options.addOption("f", "function", true, "Aggregate function :  int1,int2,...\n" +
 	    		"int1, int2 being the dimensions to aggregate");
+	    options.addOption("vd", "vertexDelimiter", true, "Vertex delimiter");
+	    options.addOption("ed", "edgeDelimiter", true, "Edge delimiter");
 	    return options;
 	  }
 	
@@ -107,6 +126,9 @@ public class CuboidProcessor extends Configured implements Tool {
 			return -1;
 		}
 		conf.set("AGGREGATE_FUNCTION", cmd.getOptionValue("f"));
+		
+		conf.set("VD", cmd.getOptionValue("vd", ","));
+		conf.set("ED", cmd.getOptionValue("ed", " "));
 		
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(LongWritable.class);

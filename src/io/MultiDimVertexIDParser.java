@@ -16,5 +16,5 @@ import graph.*;
  */
 public abstract class MultiDimVertexIDParser<T,S> implements VertexIDParser<MultiDimensionnalVertexID,S> {
 
-	public abstract MultiDimensionnalVertexID parseID(S input) throws IOException;
+	public abstract MultiDimensionnalVertexID parseID(S input, S separator) throws IOException;
 }

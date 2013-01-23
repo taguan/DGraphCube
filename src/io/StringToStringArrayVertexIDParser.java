@@ -17,10 +17,10 @@ public class StringToStringArrayVertexIDParser extends MultiDimVertexIDParser<St
 	}
 	
 	/*
-	 * @param input String of the form "dim1 dim2 dim3 ..."
+	 * @param input String of the form "dim1 sep dim2 sep dim3 ..."
 	 */
-	public MultiDimensionnalVertexID parseID(String input) throws IOException{
-		String[]explode = input.split(" ");
+	public MultiDimensionnalVertexID parseID(String input, String separator) throws IOException{
+		String[]explode = input.split(separator);
 		StringDimension[]dimensions = new StringDimension[explode.length];
 		for(int i = 0; i<dimensions.length; i++){
 			dimensions[i] = new StringDimension(explode[i]);
@@ -38,4 +38,5 @@ public class StringToStringArrayVertexIDParser extends MultiDimVertexIDParser<St
 		return vertexID;
 		
 	}
+
 }
