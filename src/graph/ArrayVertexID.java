@@ -1,22 +1,17 @@
 package graph;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
 
-import org.apache.hadoop.io.Text;
-
-public class TextArrayVertexID implements MultiDimensionnalVertexID<String> {
+public class ArrayVertexID<T> implements MultiDimensionnalVertexID<T> {
 	
 	public int nbrOfDimensions;
-	private String[]dimensions;
+	private T[]dimensions;
 	
-	public TextArrayVertexID(int nbrOfDimensions){
+	public ArrayVertexID(int nbrOfDimensions){
 		this.nbrOfDimensions = nbrOfDimensions;
 		this.dimensions = null;
 	}
 	
-	public TextArrayVertexID(String[]dimensions, int nbrOfDimensions){
+	public ArrayVertexID(T[]dimensions, int nbrOfDimensions){
 		this(nbrOfDimensions);
 		this.dimensions = dimensions;
 	}
@@ -30,17 +25,21 @@ public class TextArrayVertexID implements MultiDimensionnalVertexID<String> {
 	}
 
 	
-	public String getDimension(int index){
+	public T getDimension(int index){
 		return dimensions[index];
+	}
+	
+	public void setDimension(int index, T newValue){
+		dimensions[index] = newValue;
 	}
 	
 	public String toString(){
 		StringBuffer strb = new StringBuffer();
 		for(int i = 0; i<dimensions.length-1; i++){
-			strb.append(dimensions[i]);
+			strb.append(dimensions[i].toString());
 			strb.append(" ");
 		}
-		strb.append(dimensions[dimensions.length-1]);
+		strb.append(dimensions[dimensions.length-1].toString());
 		
 		return strb.toString();
 	}

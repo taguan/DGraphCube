@@ -4,15 +4,15 @@ import java.io.IOException;
 import graph.*;
 
 /**
- * Maps String input key into TextArrayVertexID
+ * Maps String input key into ArrayVertexID<String>
  * @author Benoit Denis
  *
  */
-public class StringToTextArrayVertexIDParser extends MultiDimVertexIDParser<String,String> {
+public class StringToStringArrayVertexIDParser extends MultiDimVertexIDParser<String,String> {
 
 	private int dimension;
 	
-	public StringToTextArrayVertexIDParser(int dimension){
+	public StringToStringArrayVertexIDParser(int dimension){
 		this.dimension = dimension;
 	}
 	
@@ -21,7 +21,7 @@ public class StringToTextArrayVertexIDParser extends MultiDimVertexIDParser<Stri
 	 */
 	public MultiDimensionnalVertexID<String> parseID(String input) throws IOException{
 		String[]explode = input.split(" ");
-		TextArrayVertexID vertexID = new TextArrayVertexID(explode,this.dimension);
+		ArrayVertexID<String> vertexID = new ArrayVertexID<String>(explode,this.dimension);
 		
 		if(explode.length != this.dimension){
 			System.out.println("Expected number of dimensions : " + this.dimension);

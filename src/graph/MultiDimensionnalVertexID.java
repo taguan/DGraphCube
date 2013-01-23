@@ -1,7 +1,6 @@
 package graph;
 
 
-import org.apache.hadoop.io.*;
 
 /**
  * Representation for multidimensional vertex identifiers
@@ -11,8 +10,7 @@ import org.apache.hadoop.io.*;
  *
  */
 
-public interface MultiDimensionnalVertexID<T> 
-	extends WritableComparable<MultiDimensionnalVertexID<T>> {
+public interface MultiDimensionnalVertexID<T>  {
 	
 	
 	/**
@@ -21,6 +19,13 @@ public interface MultiDimensionnalVertexID<T>
 	 * @return the corresponding dimension
 	 */
 	public T getDimension(int index);
+	
+	/**
+	 * Changes the value of the dimension of index 'index"
+	 * @param index
+	 * @param newValue
+	 */
+	public void setDimension(int index, T newValue);
 	
 	/**
 	 * Set the number of dimensions.

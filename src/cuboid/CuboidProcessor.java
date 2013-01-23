@@ -2,7 +2,7 @@ package cuboid;
 
 import graph.*;
 
-import io.StringToTextArrayVertexIDParser;
+import io.StringToStringArrayVertexIDParser;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -31,14 +31,14 @@ public class CuboidProcessor extends Configured implements Tool {
 		public void configure(JobConf job){
 			dimension = Integer.parseInt(job.get("DIMENSIONS"));
 		}
-		
+
 		public void map(Text key, Text value, OutputCollector<Text,LongWritable> output, Reporter reporter) throws IOException {
-			TextArrayVertexID vertexID = (TextArrayVertexID)
-					(new StringToTextArrayVertexIDParser(dimension)).parseID(key.toString());
-			TextArrayVertexID aggregatedID = vertexID;
+			MultiDimensionnalVertexID<?> vertexID = (MultiDimensionnalVertexID<?>)
+					(new StringToStringArrayVertexIDParser(dimension)).parseID(key.toString());
+			//Improvement to be implemented : leave the choice of the parser to the user
+			MultiDimensionnalVertexID<?> aggregatedID = vertexID;
+			
 			LongWritable outputWeight = new LongWritable(Long.parseLong(value.toString()));
-			System.out.println(dimension);
-			System.out.println(aggregatedID);
 			
 			output.collect(new Text(aggregatedID.toString()), outputWeight);
 		}
