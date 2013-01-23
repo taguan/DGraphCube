@@ -7,6 +7,11 @@ import io.StringToStringArrayVertexIDParser;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -58,19 +63,50 @@ public class CuboidProcessor extends Configured implements Tool {
 		}
 	}
 	
+	/**
+	   * Get the options available.
+	   *
+	   * @return Options available.
+	   */
+	  private static Options getOptions() {
+	    Options options = new Options();
+	    options.addOption("h", "help", false, "Help");
+	    options.addOption("inp", "inputPath", true, "Input path / file (HDFS)");
+	    options.addOption("oup", "outputPath", true, "Output path (HDFS");
+	    options.addOption("n", "numberOfDim", true, "Number of vertex dimensions");
+	    options.addOption("f", "function", true, "Aggregate function :  int1,int2,...\n" +
+	    		"int1, int2 being the dimensions to aggregate");
+	    return options;
+	  }
+	
 	public int run(String[]args) throws Exception{
 		
-		if(args.length != 5){
-			printHelp();
-			return -1;
-		}
+		Options options = getOptions();
 		
+		CommandLineParser parser = new BasicParser();
+	    CommandLine cmd = parser.parse(options, args);
+
+	    if (args.length == 0 || cmd.hasOption("h")) {
+	      printHelp();
+	      return 0;
+	    }
 		
 		JobConf conf = new JobConf(getConf(),CuboidProcessor.class);
 		conf.setJobName("cuboidQuery");
 		
-		conf.set("DIMENSIONS", args[3]);
-		conf.set("AGGREGATE_FUNCTION", args[4]);
+		if(!cmd.hasOption("n")){
+			System.err.println("Missing number of dimensions");
+			printHelp();
+			return -1;
+		}
+		conf.set("DIMENSIONS", cmd.getOptionValue("n"));
+		
+		if(!cmd.hasOption("f")){
+			System.err.println("Missing aggregate function");
+			printHelp();
+			return -1;
+		}
+		conf.set("AGGREGATE_FUNCTION", cmd.getOptionValue("f"));
 		
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(LongWritable.class);
@@ -82,8 +118,19 @@ public class CuboidProcessor extends Configured implements Tool {
 		conf.setInputFormat(KeyValueTextInputFormat.class);
 		conf.setOutputFormat(TextOutputFormat.class);
 		
-		FileInputFormat.setInputPaths(conf, new Path(args[1]));
-		FileOutputFormat.setOutputPath(conf, new Path(args[2]));
+		if(!cmd.hasOption("inp")){
+			System.err.println("Input path required");
+			printHelp();
+			return -1;
+		}
+		FileInputFormat.setInputPaths(conf, new Path(cmd.getOptionValue("inp")));
+		
+		if(!cmd.hasOption("oup")){
+			System.err.println("Output path required");
+			printHelp();
+			return -1;
+		}
+		FileOutputFormat.setOutputPath(conf, new Path(cmd.getOptionValue("oup")));
 		
 		JobClient.runJob(conf);
 		return 0;
@@ -91,9 +138,8 @@ public class CuboidProcessor extends Configured implements Tool {
 	}
 
 	private void printHelp() {
-		System.out.println("arg1 : input path\narg2 : output path");
-		System.out.println("arg3 : number of dimensions");
-		System.out.println("arg4 : aggregated function of the form int,int,... ");
+		HelpFormatter formatter = new HelpFormatter();
+	    formatter.printHelp(getClass().getName(), getOptions(), true);
 	}
 	
 	public static void main(String[]args) throws Exception{
