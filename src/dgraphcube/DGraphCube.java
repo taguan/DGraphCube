@@ -21,6 +21,8 @@ public class DGraphCube {
 		options.addOption("n", "dimNumber", true, "Number of dimensions");
 		options.addOption("vd", "vertexDelimiter", true, "Vertex delimiter");
 	    options.addOption("ed", "edgeDelimiter", true, "Edge delimiter");
+	    options.addOption("ml", "minLevel", true, "Minimum level to start materializing");
+	    options.addOption("k", "limit", true, "Maximum number of cuboid to materialize");
 		
 		return options;
 	}
@@ -74,16 +76,17 @@ public class DGraphCube {
 	    		String func = strategy.nextAggregate();
 	    		cuboidArgs[8] = "-f"; cuboidArgs[9] = func;
 	    		cuboidArgs[10] = "-oup"; cuboidArgs[11] = func + "_" + cmd.getOptionValue("inp");
+	    		System.out.println("Computing aggregated network : " + func);
+	    		
+	    		try{
+	    	    	CuboidProcessor.main(cuboidArgs);
+	    	    }
+	    	    catch(Exception ex){
+	    	    	System.err.println(ex.getMessage());
+	    	    	System.exit(-1);
+	    	    }
 	    	}
 	    }
 	 
-	    
-	    try{
-	    	CuboidProcessor.main(cuboidArgs);
-	    }
-	    catch(Exception ex){
-	    	System.err.println(ex.getMessage());
-	    	System.exit(-1);
-	    }
 	}
 }

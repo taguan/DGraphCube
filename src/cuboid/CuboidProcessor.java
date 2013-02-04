@@ -85,7 +85,7 @@ public class CuboidProcessor extends Configured implements Tool {
 	    options.addOption("oup", "outputPath", true, "Output path (HDFS)");
 	    options.addOption("n", "numberOfDim", true, "Number of vertex dimensions");
 	    options.addOption("f", "function", true, "Aggregate function :  int1,int2,...\n" +
-	    		"int1, int2 being the dimensions to aggregate");
+	    		"int1, int2 being the dimensions to aggregate. They have to be sorted");
 	    options.addOption("vd", "vertexDelimiter", true, "Vertex delimiter");
 	    options.addOption("ed", "edgeDelimiter", true, "Edge delimiter");
 	    return options;

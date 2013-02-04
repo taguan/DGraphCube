@@ -25,4 +25,26 @@ public interface AggregateFunction {
 	 *         For instance 0,2 means that dimensions 0 and 2 have to be aggregated
 	 */
 	public void parseFunction(String input);
+	
+	/**
+	 * Return true if this function is a descendant of parameter function
+	 * Descendant means that for every aggregated dimension of this, the dimension
+	 * is aggregated in the input function
+	 * 
+	 * @param inputFunction Function to be compared
+	 */
+	public boolean isDescendant(AggregateFunction inputFunction);
+	
+	/**
+	 * Return true if dimension i is aggregated, false otherwise
+	 * 
+	 * @param i Index of dimension
+	 */
+	public boolean isAggregated(int i);
+	
+	/**
+	 * 
+	 * @return an array of the index of dimensions to be aggregated by this function
+	 */
+	public int[] getToAggregate();
 }
