@@ -8,7 +8,9 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.hadoop.fs.Path;
 
+import cuboid.CuboidEntry;
 import cuboid.CuboidProcessor;
 
 public class DGraphCube {
@@ -62,7 +64,6 @@ public class DGraphCube {
 	    }
 	    
 	    String [] cuboidArgs = new String[12];
-	    cuboidArgs[0] = "-inp"; cuboidArgs[1] = cmd.getOptionValue("inp");
 	    cuboidArgs[2] = "-n"; cuboidArgs[3] = cmd.getOptionValue("n");
 	    cuboidArgs[4] = "-vd"; cuboidArgs[5] = cmd.getOptionValue("vd", ",");
 	    cuboidArgs[6] = "-ed"; cuboidArgs[7] = cmd.getOptionValue("ed"," ");
@@ -71,12 +72,19 @@ public class DGraphCube {
 	    	//Dont materialize... search for possible already materialized aggregated graphs
 	    }
 	    else{
-	    	MaterializationStrategy strategy = new MinStrategy(3,Integer.parseInt(cmd.getOptionValue("n")));
-	    	while(!strategy.finished()){
-	    		String func = strategy.nextAggregate();
-	    		cuboidArgs[8] = "-f"; cuboidArgs[9] = func;
-	    		cuboidArgs[10] = "-oup"; cuboidArgs[11] = func + "_" + cmd.getOptionValue("inp");
-	    		System.out.println("Computing aggregated network : " + func);
+	    	MaterializationStrategy strategy = new MinStrategy(Integer.parseInt(cmd.getOptionValue("ml")),
+	    			Integer.parseInt(cmd.getOptionValue("k")),Integer.parseInt(cmd.getOptionValue("n")),
+	    			new Path(cmd.getOptionValue("inp")));
+	    	CuboidEntry [] cuboid = new CuboidEntry[2]; //index 0 for cuboid used to compute new cuboid (index 1)
+	    	cuboid[0] = null;
+	    	cuboid[1] = null;
+	    	
+	    	while(!strategy.finished(cuboid[0])){
+	    		cuboid = strategy.nextAggregate();
+	    		cuboidArgs[0] = "-inp"; cuboidArgs[1] = cuboid[0].getPath().toString();
+	    		cuboidArgs[8] = "-f"; cuboidArgs[9] = cuboid[1].getAggregateFunction().toString();
+	    		cuboidArgs[10] = "-oup"; cuboidArgs[11] = cuboid[1].getPath().toString();
+	    		System.out.println("Computing aggregated network : " + cuboid[1].getAggregateFunction().toString());
 	    		
 	    		try{
 	    	    	CuboidProcessor.main(cuboidArgs);
@@ -85,6 +93,8 @@ public class DGraphCube {
 	    	    	System.err.println(ex.getMessage());
 	    	    	System.exit(-1);
 	    	    }
+	    		
+	    		//modify the size of the cuboid accordingly to the result of the cuboid process
 	    	}
 	    }
 	 
