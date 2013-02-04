@@ -25,4 +25,17 @@ public class CuboidEntry {
 	public Path getPath(){
 		return this.path;
 	}
+	
+	public boolean equals(Object other){
+		if(!(other instanceof CuboidEntry)){
+			return false;
+		}
+		CuboidEntry otherEntry = (CuboidEntry) other;
+		
+		return (this.getAggregateFunction().equals(otherEntry.getAggregateFunction())
+				&&
+				this.getPath().equals(otherEntry.getPath())
+				&&
+				(this.getSize() == otherEntry.getSize()));
+	}
 }

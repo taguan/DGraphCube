@@ -59,9 +59,15 @@ public class BaseAggregate implements AggregateFunction {
 			strb.append(i);
 			strb.append(",");
 		}
-		strb.append(this.dimToAggregate[this.dimToAggregate.length]);
+		strb.append(this.dimToAggregate[this.dimToAggregate.length -1]);
 		
 		return strb.toString();
+	}
+	
+	public boolean equals(Object other){
+		if(!(other instanceof BaseAggregate)) return false;
+		BaseAggregate otherFun = (BaseAggregate) other;
+		return otherFun.toString().equals(this.toString());
 	}
 
 }
