@@ -1,58 +1,34 @@
 package materialization;
 
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.ListIterator;
- 
+
 /**
- * Source : http://www.brilliantsheep.com/generic-combinations-generator-in-java/
- * @author Genk Doko
  * 
+ * @author http://rosettacode.org/wiki/Combinations#Java
  *
  */
-public class CombinationsGenerator 
-{
-    /**
-     * Generates all combinations and returns them in a list of lists.
-     */
-    public static <T> LinkedList<LinkedList<T>> combinations( T[ ] array, int minLevel, int max ) 
-    {
-        long count = 2 << array.length - 1;
-        LinkedList<LinkedList<T>> totalCombinations = new LinkedList<LinkedList<T>>( );
+public class CombinationsGenerator{
  
-        for( int i = 0; i < count; i++ ) 
-        {
-            LinkedList<T> combinations = new LinkedList<T>( );
  
-            for( int j = 0; j < array.length; j++ ) 
-            {
-                if( ( i & ( 1 << j ) ) != 0 )
-                {
-                    combinations.add( array[ j ] );
-                }
-            }
- 
-            totalCombinations.add( combinations );
+        private static String bitprint(int u){
+                String s= "";
+                for(int n= 0;u > 0;++n, u>>= 1)
+                        if((u & 1) > 0) s+= n + ",";
+                return s.substring(0, s.length()-1);
         }
  
-        return totalCombinations;
-    }
- 
-    /**
-     * Prints all combinations.
-     */
-    public static <T> void printCombinations( LinkedList<LinkedList<T>> totalCombinations )
-    {
-        ListIterator<LinkedList<T>> totalCombinationsItr = totalCombinations.listIterator( );
- 
-        while( totalCombinationsItr.hasNext( ) ) 
-        {
-            LinkedList<T> combinations = totalCombinationsItr.next( );
-            ListIterator<T> combinationsItr = combinations.listIterator( );
- 
-            while( combinationsItr.hasNext( ) )
-            {
-                System.out.print( combinationsItr.next( ) + ( combinationsItr.hasNext( ) ? ", " : "\n" ));
-            }
+        private static int bitcount(int u){
+                int n;
+                for(n= 0;u > 0;++n, u&= (u - 1));//Turn the last set bit to a 0
+                return n;
         }
-    }
+ 
+        public static LinkedList<String> comb(int c, int n){
+                LinkedList<String> s= new LinkedList<String>();
+                for(int u= 0;u < 1 << n;u++)
+                        if(bitcount(u) == c) s.push(bitprint(u));
+                Collections.sort(s);
+                return s;
+        }
 }
