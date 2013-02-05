@@ -56,7 +56,7 @@ public class BaseAggregate implements AggregateFunction {
 		if(this.dimToAggregate.length == 0) return "";
 		StringBuffer strb = new StringBuffer();
 		for(int i = 0; i < this.dimToAggregate.length - 1; i++){
-			strb.append(i);
+			strb.append(this.dimToAggregate[i]);
 			strb.append(",");
 		}
 		strb.append(this.dimToAggregate[this.dimToAggregate.length -1]);

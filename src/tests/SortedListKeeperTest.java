@@ -10,15 +10,18 @@ import org.junit.Test;
 
 import cuboid.AggregateFunction;
 import cuboid.BaseAggregate;
+import cuboid.CuboidEntry;
 
 public class SortedListKeeperTest {
 
 	SortedListKeeper cube;
 	AggregateFunction[] functionGraphCube;
+	Path path;
 	
 	@Before
 	public void setUp() throws Exception {
-		this.cube = new SortedListKeeper(3,new Path("testPath"), new Path("testInputPath"),2);
+		path = new Path("testPath");
+		this.cube = new SortedListKeeper(3,path,2);
 		
 		functionGraphCube = new AggregateFunction[8];
 		for(int i = 0; i < functionGraphCube.length; i++){
@@ -37,9 +40,9 @@ public class SortedListKeeperTest {
 
 	@Test
 	public void testGetNearestDescendant() {
-		cube.addCuboid(functionGraphCube[4], 15);
-		cube.addCuboid(functionGraphCube[5], 8);
-		cube.addCuboid(functionGraphCube[6], 40);
+		cube.addCuboid(new CuboidEntry(functionGraphCube[4], 15,path));
+		cube.addCuboid(new CuboidEntry(functionGraphCube[5], 8,path));
+		cube.addCuboid(new CuboidEntry (functionGraphCube[6], 40,path));
 		assertEquals(cube.getNearestDescendant(functionGraphCube[0]).getAggregateFunction(),functionGraphCube[5]);
 		assertEquals(cube.getNearestDescendant(functionGraphCube[1]).getAggregateFunction(),functionGraphCube[5]);
 		assertEquals(cube.getNearestDescendant(functionGraphCube[2]).getAggregateFunction(),functionGraphCube[4]);

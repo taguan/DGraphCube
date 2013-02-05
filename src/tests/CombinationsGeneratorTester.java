@@ -25,6 +25,12 @@ public class CombinationsGeneratorTester {
 		assertEquals(combinations.pop(),"1,2,4");
 		assertEquals(combinations.pop(),"1,3,4");
 		assertEquals(combinations.pop(),"2,3,4");
+		
+		combinations = CombinationsGenerator.comb(2, 3);
+		assertEquals(combinations.size(),3);
+		assertEquals(combinations.pop(),"0,1");
+		assertEquals(combinations.pop(),"0,2");
+		assertEquals(combinations.pop(),"1,2");
 	}
 
 }

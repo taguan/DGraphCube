@@ -72,7 +72,7 @@ public class DGraphCube {
 	    	//Dont materialize... search for possible already materialized aggregated graphs
 	    }
 	    else{
-	    	MaterializationStrategy strategy = new MinStrategy(Integer.parseInt(cmd.getOptionValue("ml")),
+	    	MaterializationStrategy strategy = new MinLevelStrategy(Integer.parseInt(cmd.getOptionValue("ml")),
 	    			Integer.parseInt(cmd.getOptionValue("k")),Integer.parseInt(cmd.getOptionValue("n")),
 	    			new Path(cmd.getOptionValue("inp")));
 	    	CuboidEntry [] cuboid = new CuboidEntry[2]; //index 0 for cuboid used to compute new cuboid (index 1)

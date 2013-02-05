@@ -10,7 +10,7 @@ import cuboid.CuboidEntry;
 public interface MaterializationStrategy {
 
 	/**
-	 * Tell whether the materialization is finished
+	 * Tell whether the materialization is finished. It alos adds the lastComputed CuboidEntry
 	 * 
 	 * @param lastComputed Informs the strategy about the last computed cuboid
 	 * 
@@ -24,7 +24,7 @@ public interface MaterializationStrategy {
 	 * @return CuboidEntry representation of an aggregate function
 	 *          of the form dim1,dim2,...  for instance "0,2" 
 	 *          will aggregate dimensions 0 and 2
-	 *          + path + size
+	 *          + path + size = -1 (to be updated before being added with finished)
 	 *          index 0 = cuboid from which to compute the next cuboid to materialize (index 1)
 	 */
 	public CuboidEntry[] nextAggregate();

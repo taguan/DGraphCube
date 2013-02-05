@@ -18,14 +18,12 @@ import cuboid.CuboidEntry;
 
 public class SortedListKeeper implements GraphKeeper {
 
-	private Path basePath;
 	private int dimensions;
 	private ArrayList<ArrayList<CuboidEntry>> graphCube;
 	private int minLevel;
 	
 	
-	public SortedListKeeper(int dimensions, Path pathToRoot, Path inputPath, int minLevel){
-		this.basePath = pathToRoot;
+	public SortedListKeeper(int dimensions, Path pathToRoot,  int minLevel){
 		this.dimensions = dimensions;
 		this.graphCube = new ArrayList<ArrayList<CuboidEntry>>(dimensions+1);
 		this.minLevel = minLevel;
@@ -38,7 +36,7 @@ public class SortedListKeeper implements GraphKeeper {
 		//add the base cuboid
 		AggregateFunction baseCuboid = new BaseAggregate();
 		baseCuboid.parseFunction("");
-		CuboidEntry toAdd = new CuboidEntry(baseCuboid,Long.MAX_VALUE,inputPath);
+		CuboidEntry toAdd = new CuboidEntry(baseCuboid,Long.MAX_VALUE,pathToRoot);
 		this.graphCube.get(dimensions).add(toAdd);
 	}
 	
@@ -48,29 +46,28 @@ public class SortedListKeeper implements GraphKeeper {
 	 * This cannot be the base cuboid.
 	 */
 	@Override
-	public void addCuboid(AggregateFunction aggregateFunction, long size) {
+	public void addCuboid(CuboidEntry newCuboid) {
 		
-		Path newPath = this.basePath.suffix(aggregateFunction.toString());
-		CuboidEntry toAdd = new CuboidEntry(aggregateFunction, size, newPath);
 		
-		ArrayList<CuboidEntry> currentLevel = graphCube.get(getLevel(aggregateFunction));
+		ArrayList<CuboidEntry> currentLevel = 
+				graphCube.get(getLevel(newCuboid.getAggregateFunction()));
 		if(currentLevel.size() == 0) {
-			currentLevel.add(toAdd);
+			currentLevel.add(newCuboid);
 			return;
 		}
 		
 		int i = 0;
 		CuboidEntry current = currentLevel.get(i);
 		
-		while(current.getSize() < size){
+		while(current.getSize() < newCuboid.getSize()){
 			i++;
 			if(i == currentLevel.size()){
-				currentLevel.add(toAdd);
+				currentLevel.add(newCuboid);
 				return;
 			}
 			current = currentLevel.get(i);
 		}
-		currentLevel.add(i,toAdd);
+		currentLevel.add(i,newCuboid);
 
 	}
 
@@ -84,7 +81,7 @@ public class SortedListKeeper implements GraphKeeper {
 		int level = this.getLevel(aggregateFunction);
 		
 		if(level == dimensions){ // base cuboid
-			return graphCube.get(level).get(0);
+			return this.getBaseCuboid();
 		}
 		
 		level++; //closest descendant level
@@ -109,6 +106,10 @@ public class SortedListKeeper implements GraphKeeper {
 	
 	public int getLevel(AggregateFunction func){
 		return this.dimensions - func.getToAggregate().length;
+	}
+	
+	public CuboidEntry getBaseCuboid(){
+		return graphCube.get(this.dimensions).get(0);
 	}
 	
 
