@@ -164,6 +164,6 @@ public class CuboidProcessor extends Configured implements Tool {
 	
 	public static void main(String[]args) throws Exception{
 		int res = ToolRunner.run(new Configuration(),new CuboidProcessor(),args);
-		System.exit(res);
+		System.out.println(res);
 	}
 }
