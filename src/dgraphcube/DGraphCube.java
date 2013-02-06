@@ -88,6 +88,8 @@ public class DGraphCube {
 	    		
 	    		try{
 	    	    	CuboidProcessor.main(cuboidArgs);
+	    	    	System.out.println("salut !");
+	    	    	System.exit(0);
 	    	    }
 	    	    catch(Exception ex){
 	    	    	System.err.println(ex.getMessage());

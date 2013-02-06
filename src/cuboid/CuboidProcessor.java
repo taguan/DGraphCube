@@ -69,6 +69,9 @@ public class CuboidProcessor extends Configured implements Tool {
 			while(values.hasNext()){
 				sum += values.next().get();
 			}
+			
+			reporter.incrCounter(Counters.SIZE, 1);
+			
 			output.collect(new Text(key.toString()), new LongWritable(sum));
 		}
 	}
@@ -147,7 +150,9 @@ public class CuboidProcessor extends Configured implements Tool {
 		}
 		FileOutputFormat.setOutputPath(conf, new Path(cmd.getOptionValue("oup")));
 		
-		JobClient.runJob(conf);
+		RunningJob job = JobClient.runJob(conf);
+		System.out.println(job.getCounters().findCounter(Counters.SIZE).getValue());
+		
 		return 0;
 		
 	}
