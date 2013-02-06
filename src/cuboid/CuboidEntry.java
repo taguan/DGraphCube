@@ -22,6 +22,10 @@ public class CuboidEntry {
 		return this.size;
 	}
 	
+	public void setSize(long size){
+		this.size = size;
+	}
+	
 	public Path getPath(){
 		return this.path;
 	}
@@ -37,5 +41,10 @@ public class CuboidEntry {
 				this.getPath().equals(otherEntry.getPath())
 				&&
 				(this.getSize() == otherEntry.getSize()));
+	}
+	
+	public String toString(){
+		return "Size : " + size + " , Path : " + path.toString() 
+				+ " , function : " + this.aggregateFunction.toString();
 	}
 }

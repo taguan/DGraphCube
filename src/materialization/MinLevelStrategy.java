@@ -42,6 +42,7 @@ public class MinLevelStrategy implements MaterializationStrategy {
 		if(lastComputed != null){
 			//add the lastly computed cuboid to the cube and increment the count
 			graphCube.addCuboid(lastComputed);
+			System.out.println("Added : " + lastComputed);
 			this.count++;
 		}
 		

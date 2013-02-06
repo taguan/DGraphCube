@@ -1,5 +1,10 @@
 package dgraphcube;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 import materialization.*;
 
 import org.apache.commons.cli.BasicParser;
@@ -88,15 +93,29 @@ public class DGraphCube {
 	    		
 	    		try{
 	    	    	CuboidProcessor.main(cuboidArgs);
-	    	    	System.out.println("salut !");
-	    	    	System.exit(0);
 	    	    }
 	    	    catch(Exception ex){
 	    	    	System.err.println(ex.getMessage());
 	    	    	System.exit(-1);
 	    	    }
 	    		
+	    		long size = -1;
+	    		try{
+	    			File sizeFile = new File("tempSize.txt");
+	    			BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
+	    			size = Long.parseLong(reader.readLine());
+	    			reader.close();
+	    			sizeFile.delete();
+	    			
+	    		}
+	    		catch(IOException ex){
+	    			System.out.println("Error when reading cuboid size :" + ex.getMessage());
+	    		}
+	    		System.out.println("size : " + size);
+	    		
 	    		//modify the size of the cuboid accordingly to the result of the cuboid process
+	    		cuboid[0] = cuboid[1];
+	    		cuboid[0].setSize(size);
 	    	}
 	    }
 	 

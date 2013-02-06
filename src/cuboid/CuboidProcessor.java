@@ -4,7 +4,10 @@ import graph.*;
 
 import io.StringToStringArrayKeyParser;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Iterator;
 
 import org.apache.commons.cli.BasicParser;
@@ -23,8 +26,9 @@ import org.apache.hadoop.util.ToolRunner;
 /**
  * @author Benoit Denis
  * 
- * Simplified version
- * 1) no edges
+ * Performs a Cuboid Query
+ * Side effect : create a file tempSize.txt, containing the size of the 
+ * generated cuboid (NOT on HDFS).
  */
 public class CuboidProcessor extends Configured implements Tool {
 	
@@ -151,7 +155,10 @@ public class CuboidProcessor extends Configured implements Tool {
 		FileOutputFormat.setOutputPath(conf, new Path(cmd.getOptionValue("oup")));
 		
 		RunningJob job = JobClient.runJob(conf);
-		System.out.println(job.getCounters().findCounter(Counters.SIZE).getValue());
+		
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter("tempSize.txt")));
+		writer.println(job.getCounters().findCounter(Counters.SIZE).getValue());
+		writer.close();
 		
 		return 0;
 		
@@ -163,7 +170,6 @@ public class CuboidProcessor extends Configured implements Tool {
 	}
 	
 	public static void main(String[]args) throws Exception{
-		int res = ToolRunner.run(new Configuration(),new CuboidProcessor(),args);
-		System.out.println(res);
+		ToolRunner.run(new Configuration(),new CuboidProcessor(),args);
 	}
 }
