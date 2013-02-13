@@ -28,4 +28,9 @@ public interface MaterializationStrategy {
 	 *          index 0 = cuboid from which to compute the next cuboid to materialize (index 1)
 	 */
 	public CuboidEntry[] nextAggregate();
+	
+	/**
+	 * Gets the graph keeper object
+	 */
+	public GraphKeeper getGraphKeeper();
 }

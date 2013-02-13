@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 import materialization.*;
 
@@ -15,6 +16,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.hadoop.fs.Path;
 
+import cuboid.AggregateFunction;
+import cuboid.BaseAggregate;
 import cuboid.CuboidEntry;
 import cuboid.CuboidProcessor;
 
@@ -70,8 +73,10 @@ public class DGraphCube {
 	    
 	    String [] cuboidArgs = new String[12];
 	    cuboidArgs[2] = "-n"; cuboidArgs[3] = cmd.getOptionValue("n");
-	    cuboidArgs[4] = "-vd"; cuboidArgs[5] = cmd.getOptionValue("vd", ",");
+	    cuboidArgs[4] = "-vd"; cuboidArgs[5] = cmd.getOptionValue("vd", "\t");
 	    cuboidArgs[6] = "-ed"; cuboidArgs[7] = cmd.getOptionValue("ed"," ");
+
+	    GraphKeeper graphCube = null;
 	    
 	    if(cmd.hasOption("dm")){
 	    	//Dont materialize... search for possible already materialized aggregated graphs
@@ -117,7 +122,72 @@ public class DGraphCube {
 	    		cuboid[0] = cuboid[1];
 	    		cuboid[0].setSize(size);
 	    	}
+	    	graphCube = strategy.getGraphKeeper();
 	    }
+
+	    
+	    /*
+	     * Materialization finished, wait for user input
+	     */
+	    Scanner in = new Scanner(System.in);
+	    System.out.println("Materialization finished\nWaiting for user input");
+	    System.out.println("cuboid aggregate fun, bye to quit");
+	    while(true){
+	    	String next = in.nextLine();
+	    	String[] explode = next.split(" ");
+	    	if(explode[0].equals("bye")){
+	    		in.close();
+	    		System.exit(0);
+	    	}
+	    	else if(explode[0].equals("cuboid")){
+	    		if(explode.length != 2) {
+	    			System.out.println("Input format error");
+	    			continue;
+	    		}
+	    		/*
+	    		 * Should first test if not already on the graphcube
+	    		 */
+	    		
+	    		String funString = explode[1];
+	    		AggregateFunction fun = new BaseAggregate();
+	    		fun.parseFunction(funString);
+	    		
+	    		CuboidEntry result = new CuboidEntry(fun,-1,(new Path(cmd.getOptionValue("inp")).suffix(funString)));
+	    		CuboidEntry desc = graphCube.getNearestDescendant(fun);
+	    		cuboidArgs[0] = "-inp"; cuboidArgs[1] = desc.getPath().toString();
+	    		System.out.println("Calculating from : " + desc.getAggregateFunction().toString() );
+	    		cuboidArgs[8] = "-f"; cuboidArgs[9] = funString;
+	    		cuboidArgs[10] = "-oup"; cuboidArgs[11] = result.getPath().toString();
+	    		
+	    		try{
+	    	    	CuboidProcessor.main(cuboidArgs);
+	    	    }
+	    	    catch(Exception ex){
+	    	    	System.err.println(ex.getMessage());
+	    	    	System.exit(-1);
+	    	    }
+	    		
+	    		long size = -1;
+	    		try{
+	    			File sizeFile = new File("tempSize.txt");
+	    			BufferedReader reader = new BufferedReader(new FileReader(sizeFile));
+	    			size = Long.parseLong(reader.readLine());
+	    			reader.close();
+	    			sizeFile.delete();
+	    			
+	    		}
+	    		catch(IOException ex){
+	    			System.out.println("Error when reading cuboid size :" + ex.getMessage());
+	    		}
+	    		System.out.println("size : " + size);
+	    		
+	    		result.setSize(size);
+	    		graphCube.addCuboid(result);
+	    		
+	    	}
+	    	System.out.println("finished, next input");
+	    }
+	    
 	 
 	}
 }

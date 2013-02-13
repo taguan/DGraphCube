@@ -112,5 +112,17 @@ public class SortedListKeeper implements GraphKeeper {
 		return graphCube.get(this.dimensions).get(0);
 	}
 	
+	public String toString(){
+		StringBuffer toReturn = new StringBuffer();
+		for(int i=0; i<graphCube.size();i++){
+			ArrayList<CuboidEntry> list = graphCube.get(i);
+			toReturn.append("level " + i + ":\n");
+			for(CuboidEntry entry : list){
+				toReturn.append("\t " + entry);
+			}
+		}
+		return toReturn.toString();
+	}
+	
 
 }

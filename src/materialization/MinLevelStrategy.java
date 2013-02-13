@@ -85,5 +85,9 @@ public class MinLevelStrategy implements MaterializationStrategy {
 		
 		return toReturn;
 	}
+	
+	public GraphKeeper getGraphKeeper(){
+		return this.graphCube;
+	}
 
 }

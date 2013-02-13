@@ -47,6 +47,7 @@ public class CuboidProcessor extends Configured implements Tool {
 		}
 
 		public void map(Text key, Text value, OutputCollector<Text,LongWritable> output, Reporter reporter) throws IOException {
+			System.out.println(key.toString() + " val " + value.toString());
 			MultiDimensionnalVertexID [] vertexOrEdge = 
 					(new StringToStringArrayKeyParser(dimension)).parseID(key.toString(),
 							vertexDelimiter,edgeDelimiter);
